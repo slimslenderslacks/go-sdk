@@ -137,7 +137,7 @@ func (c *Client) Connect(ctx context.Context, t Transport) (cs *ClientSession, e
 	if hc, ok := cs.mcpConn.(httpConnection); ok {
 		hc.setProtocolVersion(res.ProtocolVersion)
 	}
-	if err := handleNotify(ctx, cs, notificationInitialized, &InitializedParams{}); err != nil {
+	if err := HandleNotify(ctx, cs, notificationInitialized, &InitializedParams{}); err != nil {
 		_ = cs.Close()
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (c *Client) changeAndNotify(notification string, params Params, change func
 		sessions = slices.Clone(c.sessions)
 	}
 	c.mu.Unlock()
-	notifySessions(sessions, notification, params)
+	NotifySessions(sessions, notification, params)
 }
 
 func (c *Client) listRoots(_ context.Context, _ *ClientSession, _ *ListRootsParams) (*ListRootsResult, error) {
@@ -438,7 +438,7 @@ func (cs *ClientSession) callProgressNotificationHandler(ctx context.Context, pa
 // This can be used if the client is performing a long-running task that was
 // initiated by the server
 func (cs *ClientSession) NotifyProgress(ctx context.Context, params *ProgressNotificationParams) error {
-	return handleNotify(ctx, cs, notificationProgress, params)
+	return HandleNotify(ctx, cs, notificationProgress, params)
 }
 
 // Tools provides an iterator for all tools available on the server,

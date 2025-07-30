@@ -275,7 +275,7 @@ func (s *Server) changeAndNotify(notification string, params Params, change func
 		sessions = slices.Clone(s.sessions)
 	}
 	s.mu.Unlock()
-	notifySessions(sessions, notification, params)
+	NotifySessions(sessions, notification, params)
 }
 
 // Sessions returns an iterator that yields the current set of server sessions.
@@ -460,7 +460,7 @@ func (s *Server) ResourceUpdated(ctx context.Context, params *ResourceUpdatedNot
 	subscribedSessions := s.resourceSubscriptions[params.URI]
 	sessions := slices.Collect(maps.Keys(subscribedSessions))
 	s.mu.Unlock()
-	notifySessions(sessions, notificationResourceUpdated, params)
+	NotifySessions(sessions, notificationResourceUpdated, params)
 	return nil
 }
 
@@ -586,7 +586,7 @@ func (ss *ServerSession) callProgressNotificationHandler(ctx context.Context, pa
 // This is typically used to report on the status of a long-running request
 // that was initiated by the client.
 func (ss *ServerSession) NotifyProgress(ctx context.Context, params *ProgressNotificationParams) error {
-	return handleNotify(ctx, ss, notificationProgress, params)
+	return HandleNotify(ctx, ss, notificationProgress, params)
 }
 
 // A ServerSession is a logical connection from a single MCP client. Its
@@ -649,7 +649,7 @@ func (ss *ServerSession) Log(ctx context.Context, params *LoggingMessageParams) 
 	if compareLevels(params.Level, logLevel) < 0 {
 		return nil
 	}
-	return handleNotify(ctx, ss, notificationLoggingMessage, params)
+	return HandleNotify(ctx, ss, notificationLoggingMessage, params)
 }
 
 // AddSendingMiddleware wraps the current sending method handler using the provided
