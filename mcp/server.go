@@ -203,7 +203,8 @@ func (s *Server) AddResource(r *Resource, h ResourceHandler) {
 				fmt.Fprintf(os.Stderr, "invalid resource URI %q: %v\n", r.URI, err)
 			} else {
 				if !u.IsAbs() {
-					panic(fmt.Errorf("URI %s needs a scheme", r.URI))
+					//panic(fmt.Errorf("URI %s needs a scheme", r.URI))
+					fmt.Fprintf(os.Stderr, "invalid resource URI %q: %v\n", r.URI, err)
 				}
 			}
 			s.resources.add(&serverResource{r, h})
