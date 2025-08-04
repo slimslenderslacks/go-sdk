@@ -242,8 +242,7 @@ func TestServerCapabilities(t *testing.T) {
 			name:            "No capabilities",
 			configureServer: func(s *Server) {},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
+				Logging: &loggingCapabilities{},
 			},
 		},
 		{
@@ -252,9 +251,8 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddPrompt(&Prompt{Name: "p"}, nil)
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
-				Prompts:     &promptCapabilities{ListChanged: true},
+				Logging: &loggingCapabilities{},
+				Prompts: &promptCapabilities{ListChanged: true},
 			},
 		},
 		{
@@ -263,9 +261,8 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddResource(&Resource{URI: "file:///r"}, nil)
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
-				Resources:   &resourceCapabilities{ListChanged: true},
+				Logging:   &loggingCapabilities{},
+				Resources: &resourceCapabilities{ListChanged: true},
 			},
 		},
 		{
@@ -274,9 +271,8 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddResourceTemplate(&ResourceTemplate{URITemplate: "file:///rt"}, nil)
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
-				Resources:   &resourceCapabilities{ListChanged: true},
+				Logging:   &loggingCapabilities{},
+				Resources: &resourceCapabilities{ListChanged: true},
 			},
 		},
 		{
@@ -285,17 +281,16 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddResourceTemplate(&ResourceTemplate{URITemplate: "file:///rt"}, nil)
 			},
 			serverOpts: ServerOptions{
-				SubscribeHandler: func(ctx context.Context, sp *SubscribeParams) error {
+				SubscribeHandler: func(ctx context.Context, _ *ServerSession, sp *SubscribeParams) error {
 					return nil
 				},
-				UnsubscribeHandler: func(ctx context.Context, up *UnsubscribeParams) error {
+				UnsubscribeHandler: func(ctx context.Context, _ *ServerSession, up *UnsubscribeParams) error {
 					return nil
 				},
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
-				Resources:   &resourceCapabilities{ListChanged: true, Subscribe: true},
+				Logging:   &loggingCapabilities{},
+				Resources: &resourceCapabilities{ListChanged: true, Subscribe: true},
 			},
 		},
 		{
@@ -304,9 +299,21 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddTool(tool, nil)
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
+				Logging: &loggingCapabilities{},
+				Tools:   &toolCapabilities{ListChanged: true},
+			},
+		},
+		{
+			name:            "With completions",
+			configureServer: func(s *Server) {},
+			serverOpts: ServerOptions{
+				CompletionHandler: func(ctx context.Context, ss *ServerSession, params *CompleteParams) (*CompleteResult, error) {
+					return nil, nil
+				},
+			},
+			wantCapabilities: &serverCapabilities{
 				Logging:     &loggingCapabilities{},
-				Tools:       &toolCapabilities{ListChanged: true},
+				Completions: &completionCapabilities{},
 			},
 		},
 		{
@@ -318,11 +325,14 @@ func TestServerCapabilities(t *testing.T) {
 				s.AddTool(tool, nil)
 			},
 			serverOpts: ServerOptions{
-				SubscribeHandler: func(ctx context.Context, sp *SubscribeParams) error {
+				SubscribeHandler: func(ctx context.Context, _ *ServerSession, sp *SubscribeParams) error {
 					return nil
 				},
-				UnsubscribeHandler: func(ctx context.Context, up *UnsubscribeParams) error {
+				UnsubscribeHandler: func(ctx context.Context, _ *ServerSession, up *UnsubscribeParams) error {
 					return nil
+				},
+				CompletionHandler: func(ctx context.Context, ss *ServerSession, params *CompleteParams) (*CompleteResult, error) {
+					return nil, nil
 				},
 			},
 			wantCapabilities: &serverCapabilities{
@@ -342,11 +352,10 @@ func TestServerCapabilities(t *testing.T) {
 				HasTools:     true,
 			},
 			wantCapabilities: &serverCapabilities{
-				Completions: &completionCapabilities{},
-				Logging:     &loggingCapabilities{},
-				Prompts:     &promptCapabilities{ListChanged: true},
-				Resources:   &resourceCapabilities{ListChanged: true},
-				Tools:       &toolCapabilities{ListChanged: true},
+				Logging:   &loggingCapabilities{},
+				Prompts:   &promptCapabilities{ListChanged: true},
+				Resources: &resourceCapabilities{ListChanged: true},
+				Tools:     &toolCapabilities{ListChanged: true},
 			},
 		},
 	}
