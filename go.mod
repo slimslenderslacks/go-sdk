@@ -8,3 +8,5 @@ require (
 	github.com/yosida95/uritemplate/v3 v3.0.2
 	golang.org/x/tools v0.34.0
 )
+
+replace github.com/google/jsonschema-go => github.com/slimslenderslacks/jsonschema-go v0.0.0-20250811222546-5e1c3eecd7f4
